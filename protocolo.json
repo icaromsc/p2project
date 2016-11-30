@@ -1,0 +1,13 @@
+{
+  "waht" : {
+      "tipo" : "rli",
+      "id" : "",
+      "dados" : [
+         {"nome" : "thunderstruck.mp3"},
+         {"nome" : "camarao_na_praia.mp4"},
+         {"nome" : "melancia.jpg"},
+         {"nome" : "festa_infobio.jpg"},
+         {"nome" : "go_horse.txt"}
+      ]
+   }
+}

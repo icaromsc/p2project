@@ -33,8 +33,7 @@ class PCP(object):
         self.id = i
         self.dados = d
 
-    def __repr__(self):
-        return PCP.__dict__
+
 
 
 
@@ -50,8 +49,10 @@ with open('protocolo.json') as json_data:
     print d
 # TESTE FILE CHOOSER
 #tkinter().withdraw() # we don't want a full GUI, so keep the root window from appearing
-filename = tkFileDialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
-print(filename)
+#filename = tkFileDialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
+#print(filename)
+
+
 
 #le array de bytres
 arq=open(path+'/golfinho.jpeg','rb')

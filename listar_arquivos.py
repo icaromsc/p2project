@@ -1,9 +1,9 @@
+# -*- coding: utf-8 -*-
 import os
 import socket
 import json
 #from Tkinter import Tk
-import tkinter.ttk
-import tkinter.filedialog
+import tkFileDialog
 #from tkFileDialog import askopenfilename
 
 dirName = "public"
@@ -12,12 +12,12 @@ path = os.path.abspath(dirName)
 #verfica se o diretório inicial existe,caso contrario o cria e lista os arquivos
 def listarArquivos():
     if not os.path.exists(path):
-	    print('nao existe diretório!')
-	    print('criando diretório...')
-	    os.mkdir(path)
+        print('nao existe diretório!')
+        print('criando diretório...')
+        os.mkdir(path)
     print ('listando diretório compartilhado...')
     for nome in os.listdir(path):
-	    print (nome)
+        print (nome)
 listarArquivos()
 
 class PCP(object):
@@ -46,7 +46,7 @@ with open('protocolo.json') as json_data:
 
 # TESTE FILE CHOOSER
 #tkinter().withdraw() # we don't want a full GUI, so keep the root window from appearing
-filename = tkinter.filedialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
+filename = tkFileDialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
 print(filename)
 
 #links

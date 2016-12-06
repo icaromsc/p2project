@@ -2,6 +2,7 @@ import os
 import base64
 import json
 import tkFileDialog
+ipFile='ips.txt'
 
 import socket
 #from Tkinter import Tk
@@ -24,7 +25,7 @@ def listarArquivos():
         files.append(nome)
     return files
 
-listarArquivos()
+#listarArquivos()
 
 
 class PCP(object):
@@ -77,7 +78,7 @@ def saveFile(filename, data):
 
 
 #TESTE COM JSON
-dados=['arq1','arq2','arq3']
+'''dados=['arq1','arq2','arq3']
 t=PCP('rli','',dados)
 
 print'objeto normal:',t.__dict__
@@ -85,11 +86,28 @@ data=json.dumps(t.__dict__)
 print'json:',data
 with open('protocolo.json') as json_data:
     d = json.load(json_data)
-    print d
+
+    print d'''
 # TESTE FILE CHOOSER
 #tkinter().withdraw() # we don't want a full GUI, so keep the root window from appearing
 #filename = tkFileDialog.askopenfilename() # show an "Open" dialog box and return the path to the selected file
 #print(filename)
+def montaEnvioArq(filename):
+    file=getDataFromFile(path+'/'+filename)
+    dados=encode(file)
+    arq=FileShared(filename,dados)
+    return arq
+
+def obterIps():
+    print 'acessando lista de ips...'
+    with open(ipFile, 'r') as f:
+        data = f.read().splitlines()
+        print data
+        f.close()
+        return data
+
+
+
 
 
 
@@ -107,8 +125,10 @@ arq=open(path+'_novo_golfinho.jpeg','wb')
 arq.write(decod)
 arq.close()
 '''
-f=getFile()
-print 'filename:',getFileName(f)
+obterIps()
+#f=getFile()
+#print 'filename:',getFileName(f)
+
 
 
     #links

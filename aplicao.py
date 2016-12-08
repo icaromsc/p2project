@@ -9,9 +9,10 @@ ipFile='ips.txt'
 dirName = "public"
 path = os.path.abspath(dirName)
 print 'starting app...'
-time.sleep(5)
+time.sleep(1)
 import client
-s=client.start()
+#client.start()
+client.testar()
 
 
 

@@ -1,7 +1,8 @@
 import socket
 import threading
-import json
+#import json
 import controle
+import simplejson as json
 HOST = '127.0.0.1'              # Endereco IP do Servidor
 PORT = 54321            # Porta do Servidor
 
@@ -36,14 +37,15 @@ class ThreadedServer(object):
                 print 'processing request'
                 #c=controle.process_request(response,address)
                 print 'teste'
-                r = json.loads(response)
+                json_decode = response.replace("'", "\"")
+                r = json.loads(json_decode)
                 tipo = r['tipo']
                 print 'tipo de request:', tipo
                 if tipo == 'pli':
                     # envia lista de arquivos
                     import client
                     files = controle.listarArquivos()
-                    send = client.Sender(address, '')
+                    send = client.Sender(address,'')
                     send.sendListFiles(files)
                 elif tipo == 'par':
                     # envia arquivo
@@ -66,6 +68,7 @@ def process_request(response,adress):
 
 
 def start():
+    #serve()
     ThreadedServer(HOST, PORT).listen()
 
 
@@ -75,19 +78,39 @@ ThreadedServer(HOST, PORT).listen()
 #if __name__ == "__main__":
 #    port_num = input("Port? ")
 
-'''tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-orig = (HOST, PORT)
-tcp.bind(orig)
-tcp.listen(1)
-print('inicializando server...')
-print 'endereco:',tcp.getsockname()[0],'\nporta:',PORT
-while True:
-    con, cliente = tcp.accept()
-    print ('Conectado por:', cliente)
+def serve():
+    tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    orig = (HOST, PORT)
+    tcp.bind(orig)
+    tcp.listen(1)
+    print('inicializando server...')
+    print 'endereco:',tcp.getsockname()[0],'\nporta:',PORT
+    print 'listening...'
     while True:
-        msg = con.recv(1024)
-        if not msg: break
-        print ('mensagem recebida:', msg)
-    print ('Finalizando conexao do client:', cliente)
-    con.close()'''
+        con, address = tcp.accept()
+        response = con.recv(1024)
+        if not response: break
+        print 'mensagem recebida:', response
+        print 'Conectado por:', address
+        json_decode= response.replace("'", "\"")
+        r = json.loads(json_decode)
+        print 'json:',r
+        tipo = r['tipo']
+        print 'tipo de request:', tipo
+        if tipo == 'pli':
+            # envia lista de arquivos
+            import client
+            files = controle.listarArquivos()
+            send = client.Sender(address, 54321)
+            con.close()
+            send.sendListFiles(files)
+        elif tipo == 'par':
+            # envia arquivo
+            gg = []
+        # client.send(response)
+            con.close()
+        print 'finalize request...'
+        print ('Finalizando conexao do client:', address)
 
+
+#serve()

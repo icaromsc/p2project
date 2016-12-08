@@ -67,10 +67,19 @@ class ThreadedServer(object):
             #client.send(response)
             elif tipo == pcp.PEDIDO_ARQUIVO:
                 arquivo = r['dados']
-                print 'recuperou dados do json:', arquivo
-                send = client.Sender(ip, arquivo)
-                send.sendFile()
-                print 'finalize request'
+                if type(arquivo) is list:
+                    for a in arquivo:
+                        print 'recuperou dados do json:', a
+                        send = client.Sender(ip, a)
+                        send.sendFile()
+                        print 'finalize request'
+                elif type(arquivo) is str:
+                    print 'recuperou dados do json:', arquivo
+                    send = client.Sender(ip, arquivo)
+                    send.sendFile()
+                    print 'finalize request'
+
+
 
             elif tipo == pcp.ENVIO_ARQUIVO:
                 dados = r['dados']

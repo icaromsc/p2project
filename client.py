@@ -23,7 +23,7 @@ class Sender(object):
         js = pcp.envioArq
         nome=self.filename
         file = controle.montaEnvioArq(nome)
-        dados = [str(file.filename), file.data]
+        dados=[str(file.filename), file.data]
         js['dados'] = dados
         print str(js)
         msg = str(js)
@@ -33,9 +33,10 @@ class Sender(object):
     def getFile(self):
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         dest = (self.host, PORT)
+        dados=[self.filename]
         tcp.connect(dest)
         js = pcp.pedidoArq
-        js['dados'] = self.filename
+        js['dados'] = dados
         print str(js)
         msg = str(js)
         tcp.send(msg)
@@ -84,7 +85,7 @@ def start():
 def go(ip):
     #mutex = threading.Lock()
     #try:
-    send = Sender(ip, 'golfinho.jpeg')
+    send = Sender(ip, '')
     #mutex.acquire()
     send.getListFiles()
     #mutex.release()

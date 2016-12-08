@@ -1,10 +1,10 @@
 import socket
 import threading
-#import json
+import json
 import pcp
 import time
 import controle
-import simplejson as json
+#import yaml as json
 HOST = ''              # Endereco IP do Servidor
 PORT = 54321            # Porta do Servidor
 
@@ -61,7 +61,7 @@ class ThreadedServer(object):
                 else:
                     print 'preparando envio de requisicao dos arqs nao sincronizados'
                     for f in diff:
-                        send = client.Sender(ip, f)
+                        send = client.Sender(ip, str(f))
                         send.getFile()
                         time.sleep(1)
             #client.send(response)

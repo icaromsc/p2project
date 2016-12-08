@@ -23,7 +23,7 @@ class Sender(object):
         js = pcp.envioArq
         nome=self.filename
         file = controle.montaEnvioArq(nome)
-        dados = [file.filename, file.data]
+        dados = [str(file.filename), file.data]
         js['dados'] = dados
         print str(js)
         msg = str(js)

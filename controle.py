@@ -2,7 +2,7 @@ import os
 import base64
 import json
 import tkFileDialog
-import jsons
+import pcp
 import client
 port='54321'
 ipFile='ips.txt'
@@ -41,6 +41,14 @@ def listarArquivos():
         files.append(nome)
     return files
 
+
+def sharedFiles():
+    files=[]
+    for nome in os.listdir(path):
+        files.append(nome)
+    return files
+
+
 def montaEnvioArq(filename):
     file=getDataFromFile(path+'/'+filename)
     dados=encode(file)
@@ -69,6 +77,18 @@ def getDataFromFile(file):
     data = arq.read()
     arq.close()
     return data
+
+
+def compararListas(listaRecebida):
+    listaLocal = sharedFiles()
+    diff=set(listaRecebida).symmetric_difference(set(listaLocal))
+
+    #c = set(listaRecebida).union(set(listaLocal))
+    #d = set(listaRecebida).intersection(set(listaLocal))
+    #diff = list(c - d)
+    diff=list(diff)
+    print 'difference between lists:' , diff
+    return diff
 
 
 def encode(file):

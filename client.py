@@ -1,6 +1,6 @@
 import socket
 import json
-import jsons as j
+import pcp
 import controle
 #import aplicao as app
 import threading as thread
@@ -18,7 +18,7 @@ class Sender(object):
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         dest = (self.host, PORT)
         tcp.connect(dest)
-        js = j.envioArq
+        js = pcp.envioArq
         nome=self.filename
         file = controle.montaEnvioArq(nome)
         dados = [file.filename, file.data]
@@ -32,26 +32,25 @@ class Sender(object):
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         dest = (self.host, PORT)
         tcp.connect(dest)
-        js = j.pedidoArq
+        js = pcp.pedidoArq
         js['dados'] = self.filename
         print str(js)
         msg = str(js)
         tcp.send(msg)
         tcp.close()
 
-    def sendListFiles(self,list):
+    def sendListFiles(self,list,host):
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        dest = (self.host, PORT)
+        dest = (host[0], PORT)
         print  'preparando para enviar requsicao socket:', '\nip:', self.host, ' porta:', PORT
-        try:
-            js = j.envioListaArq
-            js['dados'] = list
-            print 'json a ser encaminhado:',str(js)
-            msg = str(js)
-            tcp.connect(dest)
-            tcp.send(msg)
-        except:
-            print 'ERROR: deceiver no reached'
+        js = pcp.envioListaArq
+        js['dados'] = list
+        print 'json a ser encaminhado:',str(js)
+        msg = str(js)
+        tcp.connect(dest)
+        tcp.send(msg)
+        #print 'ERROR: deceiver no reached'
+        print 'fechando conexao...'
         tcp.close()
 
     def getListFiles(self):
@@ -59,7 +58,7 @@ class Sender(object):
         print  'preparando para enviar requsicao socket:','\nip:',self.host,' porta:',PORT
         dest = (self.host, PORT)
         tcp.connect((self.host, PORT))
-        js = j.pedidoListaArq
+        js = pcp.pedidoListaArq
         print str(js)
         msg = str(js)
         print 'mensagem sendo enviada:',msg
@@ -85,5 +84,5 @@ def go(ip):
 
 def testar():
     ips = controle.obter_ips()
-    send = Sender(ips[1], 'golfinho.jpeg')
+    send = Sender('localhost', 'golfinho.jpeg')
     send.getListFiles()

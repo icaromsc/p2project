@@ -1,9 +1,10 @@
 import socket
 import threading
 #import json
+import pcp
 import controle
 import simplejson as json
-HOST = '127.0.0.1'              # Endereco IP do Servidor
+HOST = ''              # Endereco IP do Servidor
 PORT = 54321            # Porta do Servidor
 
 class ThreadedServer(object):
@@ -23,40 +24,48 @@ class ThreadedServer(object):
             client, address = self.sock.accept()
             client.settimeout(60)
             print 'request delivered to thread'
-            threading.Thread(target = self.listenToClient,args = (client,address)).start()
+            threading.Thread(target = self.processRequest,args = (client,address)).start()
 
-    def listenToClient(self, client, address):
+    def processRequest(self, client, address):
         print 'connected by:',address
         size = 1024
-        try:
-            data = client.recv(size)
-            if data:
-                # Set the response to echo back the recieved data
-                response = data
-                print 'response:',response
-                print 'processing request'
-                #c=controle.process_request(response,address)
-                print 'teste'
-                json_decode = response.replace("'", "\"")
-                r = json.loads(json_decode)
-                tipo = r['tipo']
-                print 'tipo de request:', tipo
-                if tipo == 'pli':
-                    # envia lista de arquivos
-                    import client
-                    files = controle.listarArquivos()
-                    send = client.Sender(address,'')
-                    send.sendListFiles(files)
-                elif tipo == 'par':
-                    # envia arquivo
-                    gg = []
-                #client.send(response)
+        #try:
+        data = client.recv(size)
+        if data:
+            # Set the response to echo back the recieved data
+            response = data
+            print 'response:',response
+            print 'processing request'
+            #c=controle.process_request(response,address)
+            json_decode = response.replace("'", "\"")
+            r = json.loads(json_decode)
+            tipo = r['tipo']
+            print 'tipo de request:', tipo
+            if tipo == pcp.PEDIDO_LISTA_ARQUIVO :
+                # envia lista de arquivos
+                import client
+                files = controle.listarArquivos()
+                send = client.Sender(address,'')
+                send.sendListFiles(files,address)
+            elif tipo == pcp.ENVIO_LISTA_ARQUIVO:
+                # envia lista arquivo
+                arquivos=r['dados']
+                print 'recuperou do json lista:',arquivos
+                #arquivos.append('gasparzinho.jpg')
+                diff=controle.compararListas(arquivos)
+                if not diff :
+                    print 'diretorio sincronizado com cliente'
+                else:
+                    print 'preparando envio de requisicao dos arqs nao sincronizados'
+
+            #client.send(response)
+            elif tipo == 'rli':
                 print 'finalize request'
-            else:
-                raise ('Client disconnected')
-        except:
-            client.close()
-            return False
+        else:
+            raise ('Client disconnected')
+        #except:
+            #client.close()
+            #return False
 
 
 
@@ -72,7 +81,7 @@ def start():
     ThreadedServer(HOST, PORT).listen()
 
 
-ThreadedServer(HOST, PORT).listen()
+ThreadedServer('', PORT).listen()
 #start()
 
 #if __name__ == "__main__":
@@ -97,18 +106,20 @@ def serve():
         print 'json:',r
         tipo = r['tipo']
         print 'tipo de request:', tipo
-        if tipo == 'pli':
+        if tipo == pcp.PEDIDO_LISTA_ARQUIVO:
             # envia lista de arquivos
             import client
             files = controle.listarArquivos()
             send = client.Sender(address, 54321)
-            con.close()
-            send.sendListFiles(files)
-        elif tipo == 'par':
+            #con.close()
+            send.sendListFiles(files,address)
+        elif tipo == pcp.ENVIO_ARQUIVO:
             # envia arquivo
             gg = []
+        elif tipo ==pcp.ENVIO_LISTA_ARQUIVO:
+            d=[]
         # client.send(response)
-            con.close()
+            #con.close()
         print 'finalize request...'
         print ('Finalizando conexao do client:', address)
 

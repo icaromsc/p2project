@@ -103,6 +103,8 @@ def saveFile(filename, data):
     arq = open(path + '/' + filename, 'wb')
     arq.write(data)
     arq.close()
+    print filename,' salvo em:',path
+
 
 
 

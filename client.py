@@ -5,7 +5,9 @@ import controle
 #import aplicao as app
 import threading as thread
 import threading
+#from socket import *
 
+mutex=threading.Lock()
 HOST = '127.0.0.1'     # Endereco IP do Servidor
 PORT = 54321            # Porta que o Servidor esta
 
@@ -41,7 +43,7 @@ class Sender(object):
 
     def sendListFiles(self,list,host):
         tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        dest = (host[0], PORT)
+        dest = (host, PORT)
         print  'preparando para enviar requsicao socket:', '\nip:', self.host, ' porta:', PORT
         js = pcp.envioListaArq
         js['dados'] = list
@@ -67,22 +69,41 @@ class Sender(object):
 
 def start():
     import time
+    timeout=5
     while True:
         ips = controle.obter_ips()
         for ip in ips:
-            threading.Thread(target=go,args=(ip)).start()
-        time.sleep(5)
+            time.sleep(timeout)
+            threading.Thread(target=go,args=(ip,)).start()
+            #value=(ip)
+            #thread._start_new_thread(go,(ip))
+        print 'aguardando timeout para novas solicitacoes...'
+        time.sleep(timeout*len(ips))
 
 
 def go(ip):
-    try:
-        send = Sender(ip, 'golfinho.jpeg')
-        send.getListFiles()
-    except:
-        print 'cliente ', ip, ' inalcansavel'
-
+    #mutex = threading.Lock()
+    #try:
+    send = Sender(ip, 'golfinho.jpeg')
+    #mutex.acquire()
+    send.getListFiles()
+    #mutex.release()
+    #except:
+        #mutex.acquire()
+        #print 'cliente ', ip, ' inalcansavel'
+        #mutex.release()
 
 def testar():
-    ips = controle.obter_ips()
-    send = Sender('localhost', 'golfinho.jpeg')
+    import time
+    #ips = controle.obter_ips()
+
+    send = Sender('localhost', '')
     send.getListFiles()
+    '''while True:
+        ips = controle.obter_ips()
+        for ip in ips:
+            time.sleep(2)
+            send = Sender(ip, '')
+            send.getListFiles()
+        time.sleep(15)'''
+

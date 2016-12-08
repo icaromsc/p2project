@@ -11,8 +11,8 @@ path = os.path.abspath(dirName)
 print 'starting app...'
 time.sleep(1)
 import client
-#client.start()
-client.testar()
+client.start()
+#client.testar()
 
 
 

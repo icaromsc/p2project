@@ -2,6 +2,7 @@ import socket
 import threading
 #import json
 import pcp
+import time
 import controle
 import simplejson as json
 HOST = ''              # Endereco IP do Servidor
@@ -21,13 +22,15 @@ class ThreadedServer(object):
         print 'listening...'
         self.sock.listen(5)
         while True:
+            print 'waiting for request...'
             client, address = self.sock.accept()
             client.settimeout(60)
             print 'request delivered to thread'
             threading.Thread(target = self.processRequest,args = (client,address)).start()
 
     def processRequest(self, client, address):
-        print 'connected by:',address
+        ip=address[0]
+        print 'connected by:',ip
         size = 1024
         #try:
         data = client.recv(size)
@@ -41,12 +44,12 @@ class ThreadedServer(object):
             r = json.loads(json_decode)
             tipo = r['tipo']
             print 'tipo de request:', tipo
+            import client
             if tipo == pcp.PEDIDO_LISTA_ARQUIVO :
                 # envia lista de arquivos
-                import client
                 files = controle.listarArquivos()
                 send = client.Sender(address,'')
-                send.sendListFiles(files,address)
+                send.sendListFiles(files,ip)
             elif tipo == pcp.ENVIO_LISTA_ARQUIVO:
                 # envia lista arquivo
                 arquivos=r['dados']
@@ -57,12 +60,27 @@ class ThreadedServer(object):
                     print 'diretorio sincronizado com cliente'
                 else:
                     print 'preparando envio de requisicao dos arqs nao sincronizados'
-
+                    for f in diff:
+                        send = client.Sender(ip, f)
+                        send.getFile()
+                        time.sleep(1)
             #client.send(response)
-            elif tipo == 'rli':
+            elif tipo == pcp.PEDIDO_ARQUIVO:
+                arquivo = r['dados']
+                print 'recuperou dados do json:', arquivo
+                send = client.Sender(ip, arquivo)
+                send.sendFile()
                 print 'finalize request'
+
+            elif tipo == pcp.ENVIO_ARQUIVO:
+                dados = r['dados']
+                print 'recuperou dados do json:', dados
+                controle.saveFile(dados[0],controle.decode(dados[1]))
+
+
         else:
             raise ('Client disconnected')
+        print 'finalizando thread...'
         #except:
             #client.close()
             #return False
